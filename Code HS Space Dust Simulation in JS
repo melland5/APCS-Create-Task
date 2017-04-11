@@ -1,0 +1,82 @@
+var dusts = [];
+var mass = [];
+var dec = [];
+var NUM_DUST = 50;
+var GRAVITY = .00000000006671281903963040991511534289;
+var vX = [];
+var vY = [];
+var size = [];
+function start(){
+    initScene();
+    setTimer(moveScene, 1);
+}
+
+function initScene(){
+    for(var i = 0; i < NUM_DUST; i++){
+        var dust = new Circle(2);
+        dust.setPosition(Randomizer.nextInt(20, getWidth() - 20), Randomizer.nextInt(20, getHeight() - 20));
+        add(dust);
+        mass.push(1000);
+        dusts.push(dust);
+        vX.push(0);
+        vY.push(0);
+        size.push(2);
+        dec.push(true);
+    }
+}
+
+function getVelocity(){
+    for(var i = 0; i < dusts.length; i++){
+        var vx = 0;
+        var vy = 0;
+        for(var j = 0; j < dusts.length; j++){
+            var gx = 0;
+            var gy = 0;
+            if(i != j){
+                var x = dusts[i].getX() - dusts[j].getX();
+                var y = dusts[i].getY() - dusts[j].getY();
+                var d = Math.sqrt((x * x) + (y * y));
+                var g = -5000000 * GRAVITY * (mass[j] / d);
+                gx = (x * g) / d;
+                gy = (y * g) / d;
+            }
+            var vx = vx + gx;
+            var vy = vy + gy;
+        }
+        vX[i] = vx;
+        vY[i] = vy;
+    }
+}
+
+function moveScene(){
+    getVelocity();
+    for(var i = 0; i < dusts.length; i++){
+        if(dec[i] == true){
+            if(dec[i] = true){
+                dusts[i].move(vX[i], vY[i]);
+            }
+        }
+        for(var j = 0; j < dusts.length; j++){
+            if(i != j){
+                if(dusts[i].getX() <= dusts[j].getX() + 5 && dusts[i].getX() >= dusts[j].getX() - 5){
+                    if(dusts[i].getY() <= dusts[j].getY() + 5 && dusts[i].getY() >= dusts[j].getY() - 5){
+                        remove(dusts[j]);
+                        dec[j] = false;
+                        size[i] = size[i] + size[j];
+                        size[j] = 0;
+                        mass[i] = mass[i] + mass[j];
+                        mass[j] = 0;
+                        dusts[j].setPosition(0, 0);
+                        var x = dusts[i].getX();
+                        var y = dusts[i].getY();
+                        remove(dusts[i]);
+                        dusts[i] = new Circle(size[i]);
+                        dusts[i].setPosition(x, y);
+                        add(dusts[i]);
+                    }
+                }
+            }
+        }
+    }
+}
+    
